@@ -1,0 +1,46 @@
+# Configuración para entorno de desarrollo
+defaults:
+  - base_config
+
+# Override para desarrollo
+app:
+  environment: "development"
+
+# Configuración específica para desarrollo
+data:
+  filters:
+    start_date: "2025-01-01"
+    end_date: "2025-03-31"
+    countries: ["GT", "PE"]  # Solo algunos países para testing
+  
+  output:
+    base_path: "data/processed/dev"
+    mode: "overwrite"
+
+# Configuración de Spark para desarrollo (recursos limitados)
+spark:
+  config:
+    "spark.sql.adaptive.enabled": "true"
+    "spark.sql.adaptive.coalescePartitions.enabled": "true"
+    "spark.sql.adaptive.coalescePartitions.minPartitionNum": "1"
+    "spark.driver.memory": "2g"
+    "spark.executor.memory": "2g"
+
+# Logging más detallado para desarrollo
+logging:
+  level: "DEBUG"
+  format: "{time} | {level} | {module}:{line} | {function} | {message}"
+
+# Configuraciones adicionales para desarrollo
+transformations:
+  data_cleaning:
+    remove_empty_materials: true
+    remove_zero_prices: true
+    remove_negative_quantities: true
+    fill_missing_countries: false
+  
+  additional_columns:
+    total_value: true
+    delivery_category: true
+    processing_date: true
+    data_quality_score: true

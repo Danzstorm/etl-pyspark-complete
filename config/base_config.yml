@@ -1,0 +1,81 @@
+# Configuración base para el ETL de entregas de productos
+app:
+  name: "etl_entregas_productos"
+  version: "1.0.0"
+  environment: "base"
+
+# Configuración de datos
+data:
+  input:
+    file_path: "data/raw/entregas_productos_prueba.csv"
+    file_format: "csv"
+    header: true
+    delimiter: ","
+    encoding: "utf-8"
+  
+  output:
+    base_path: "data/processed"
+    partition_by: "fecha_proceso"
+    file_format: "parquet"
+    mode: "overwrite"
+    
+  # Filtros configurables
+  filters:
+    start_date: "2025-01-01"  # Formato YYYY-MM-DD
+    end_date: "2025-12-31"
+    countries: ["GT", "PE", "EC", "SV", "HN", "JM"]  # Lista de países o null para todos
+    
+# Configuración de transformaciones
+transformations:
+  # Conversión de unidades
+  unit_conversion:
+    cs_to_units_multiplier: 20  # 1 CS = 20 unidades
+    target_unit: "units"  # Unidad objetivo en el output
+    
+  # Tipos de entrega válidos y sus categorías
+  delivery_types:
+    routine: ["ZPRE", "ZVE1"]  # Entregas de rutina
+    bonus: ["Z04", "Z05"]      # Entregas con bonificaciones
+    exclude: ["COBR"]          # Tipos a excluir del procesamiento
+    
+  # Reglas de limpieza de datos
+  data_cleaning:
+    remove_empty_materials: true      # Eliminar registros con material vacío
+    remove_zero_prices: true          # Eliminar registros con precio 0 o científico
+    remove_negative_quantities: true  # Eliminar cantidades negativas
+    fill_missing_countries: false     # No llenar países faltantes
+    
+  # Columnas adicionales a calcular
+  additional_columns:
+    total_value: true           # precio * cantidad_normalizada
+    delivery_category: true     # Categoría de entrega (routine/bonus)
+    processing_date: true       # Fecha de procesamiento actual
+    data_quality_score: true    # Score de calidad del registro
+
+# Configuración de Spark
+spark:
+  app_name: "ETL_Entregas_Productos"
+  config:
+    "spark.sql.adaptive.enabled": "true"
+    "spark.sql.adaptive.coalescePartitions.enabled": "true"
+    "spark.sql.adaptive.coalescePartitions.minPartitionNum": "1"
+    "spark.sql.execution.arrow.pyspark.enabled": "true"
+    "spark.serializer": "org.apache.spark.serializer.KryoSerializer"
+
+# Configuración de logging
+logging:
+  level: "INFO"
+  format: "{time} | {level} | {module} | {function} | {message}"
+  file_path: "logs/etl_process.log"
+  
+# Schema esperado del archivo de entrada
+schema:
+  pais: "string"
+  fecha_proceso: "string"
+  transporte: "string"
+  ruta: "string"
+  tipo_entrega: "string"
+  material: "string"
+  precio: "double"
+  cantidad: "double"
+  unidad: "string"

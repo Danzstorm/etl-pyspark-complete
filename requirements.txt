@@ -1,0 +1,30 @@
+# Core dependencies
+pyspark==3.4.0
+omegaconf==2.3.0
+pandas==2.0.3
+numpy==1.24.3
+
+# Data validation and quality
+pydantic==2.0.3
+great-expectations==0.17.15
+
+# Development and testing
+pytest==7.4.0
+pytest-cov==4.1.0
+black==23.7.0
+flake8==6.0.0
+mypy==1.5.1
+
+# Jupyter for exploration
+jupyter==1.0.0
+matplotlib==3.7.2
+seaborn==0.12.2
+
+# Utilities
+python-dotenv==1.0.0
+click==8.1.6
+loguru==0.7.0
+
+# Documentation
+mkdocs==1.5.2
+mkdocs-material==9.2.3
